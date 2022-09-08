@@ -4,25 +4,24 @@
       <div class="calculator-inner">
         <div class="calculator-inner-output">
           <h1>=</h1>
-          <div class="calculator-display">
-            <div class="calculator-display-in-miniDisplay">
+          <div class="calculator-inner-output-display">
+            <div class="calculator-inner-output-display-miniResult">
               {{ previous || "0" }}
             </div>
-            <div class="calculator-display-in-display">
+            <div class="calculator-inner-output-display-result">
               {{ current || "0" }}
             </div>
-           
           </div>
         </div>
-        <div class="flex">
-          <div class="mode-toggle" @click="modeToggle" :class="darkDark">
-            <div class="toggle">
+        <div class="calculator-flex">
+          <div class="mode" @click="modeToggle" :class="darkDark">
+            <div class="mode-toggle">
               <div id="dark-mode" type="checkbox"></div>
             </div>
           </div>
+          <img class="calculator-flex-img" src="../svg/time-left-12447.svg" />
         </div>
       </div>
-
       <div class="calculator-under">
         <div class="calculator-under-left">
           <div class="calculator-under-left-operations">
@@ -82,7 +81,6 @@ export default {
       return this.darkMode && "darkmode-toggled";
     },
   },
-
   data() {
     return {
       display: 0,
@@ -90,7 +88,6 @@ export default {
       current: "",
       operator: null,
       operatorClicked: false,
-
       darkMode: false,
     };
   },
@@ -100,13 +97,11 @@ export default {
       this.darkMode = true;
       this.$emit("dark");
     },
-
     light() {
       document.querySelector("body").classList.remove("dark-mode");
       this.darkMode = false;
       this.$emit("light");
     },
-
     modeToggle() {
       if (
         this.darkMode ||
@@ -119,7 +114,6 @@ export default {
     },
     /*
 dark mod işlemleri bitti
-
 */ clear() {
       this.current = "";
       this.operatorClicked = false;
@@ -175,17 +169,17 @@ dark mod işlemleri bitti
 };
 </script>
 <style lang="scss" scoped>
+  @import "../assets/color.scss";
 .container {
   display: flex;
-
   align-items: center;
-  background: #e5e5e5;
+  background:$background100;
   max-width: 100%;
   height: 100vh;
 }
 .calculator {
   position: relative;
-  margin-inline-start: 35%;
+  margin: 0 auto;
   width: 423px;
   height: 858px;
   background: linear-gradient(
@@ -196,40 +190,35 @@ dark mod işlemleri bitti
     #e5e5e5 100%
   );
   border-radius: 40px;
-  &-display {
-    overflow: hidden;
-    font-size: 40px;
-    line-height: 60px;
-    overflow: visible;
-    color: #373737;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: -20px;
-    &-in {
-      &-miniDisplay {
-        font-weight: 500;
-        font-size: 22px;
-        line-height: 33px;
-        color: rgba(172, 166, 166, 0.5);
-      }
-      &-display{
-
-      }
-    }
-  }
   &-inner {
     position: absolute;
     width: 100%;
     height: 50%;
-    background: rgba(230, 246, 255, 0.2);
+    background: $background200;
     box-shadow: 0px -5px 70px rgba(0, 0, 0, 0.1);
     border-radius: 30px;
     &-output {
       display: flex;
-      gap: 255px;
+      gap: 205px;
       margin-top: 250px;
-      margin-left: 50px;
+      margin-left: 70px;
+      &-display {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow: hidden;
+        overflow: visible;
+        font-size: 40px;
+        line-height: 60px;
+        color: $color300;
+        margin-top: -20px;
+        &-miniResult {
+          font-weight: 500;
+          font-size: 22px;
+          line-height: 33px;
+          color: $color200;
+        }
+      }
     }
   }
   &-under {
@@ -247,49 +236,53 @@ dark mod işlemleri bitti
       #a4c9ff 70.94%
     );
     &-left {
-      margin-inline-start: 7%;
       display: flex;
       flex-direction: column;
+      margin-inline-start: 7%;
       margin-top: 30px;
       &-operations {
         display: flex;
         gap: 35px;
         width: 260px;
         height: 60px;
-        background: rgba(255, 255, 255, 0.3);
+        background: $background300;
         box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.05);
         border-radius: 40px;
         &-operator {
+          display: flex;
+          align-items: center;
           margin-left: 23px;
           font-size: 26px;
           cursor: pointer;
-          display: flex;
-          align-items: center;
         }
       }
       &-numbers {
-        margin-top: 20px;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 25px;
         align-items: center;
         text-align: center;
+        margin-top: 20px;
       }
     }
     &-right {
-      margin-top: 34px;
       align-items: center;
       text-align: center;
+      margin-top: 34px;
       width: 70px;
       height: 430px;
-      background: rgba(255, 255, 255, 0.3);
+      background: $background300;
       box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.05);
       border-radius: 40px;
       &-operators {
         display: flex;
         flex-direction: column;
-        margin-top: 10px;
         gap: 38px;
+        margin-top: 10px;
+        font-size: 26px;
+        line-height: 50px;
+        color: #373737;
+        cursor: pointer;
       }
     }
     &-bar {
@@ -298,48 +291,44 @@ dark mod işlemleri bitti
       height: 5px;
       left: 124px;
       top: 483px;
-      background: #6396c5;
+      background: $background400;
       border-radius: 25px;
     }
   }
+  &-flex {
+    display: flex;
+    align-items: center;
+    margin-top: -480px;
+    width: 100%;
+    height: 100%;
+    margin-left: 154px;
+    gap: 60px;
+  }
 }
 .btn {
+  display: flex;
+  display: block;
   width: 70px;
   height: 70px;
-  background: rgba(255, 255, 255, 0.3);
+  background: $background300;
   border-radius: 50%;
-  font-family: "Poppins";
-  font-style: normal;
   font-weight: 600;
   font-size: 26px;
   line-height: 66px;
-  display: flex;
-  display: block;
-  margin: auto;
-  color: #373737;
-  cursor: pointer;
-}
-.buton {
-  font-size: 26px;
-  line-height: 50px;
-  display: flex;
-  display: block;
-  margin: auto;
-  color: #373737;
-  cursor: pointer;
-}
 
+  color: $color300;
+  cursor: pointer;
+}
 // _dark-mode.scss
-
-.mode-toggle {
+.mode {
   position: relative;
   width: 122px;
   height: 44px;
-  background: #a9dcfd;
+  background: $background500;
   border-radius: 40px;
   overflow: hidden;
   cursor: pointer;
-  .toggle {
+  &-toggle {
     position: absolute;
     top: 0;
     left: 30px;
@@ -348,7 +337,6 @@ dark mod işlemleri bitti
     width: 30px;
     height: 30px;
     border-radius: 50%;
-
     border: 3px solid transparent;
     box-shadow: inset 0 0 0 2px #a5abba;
     overflow: hidden;
@@ -359,7 +347,6 @@ dark mod işlemleri bitti
       height: 100%;
       overflow: hidden;
       border-radius: 50%;
-
       &:before {
         content: "";
         position: relative;
@@ -367,14 +354,13 @@ dark mod işlemleri bitti
         height: 100%;
         left: 50%;
         float: left;
-        background-color: #a6abba;
+        background-color: $background600;
         transition: border-radius 0.5s ease, width 0.5s ease, height 0.5s ease,
           left 0.5s ease, transform 0.5s ease;
       }
     }
   }
 }
-
 body.dark-mode {
   .calculator {
     &-inner {
@@ -384,19 +370,18 @@ body.dark-mode {
         #252628 22.9%,
         #000309 100%
       );
-      color: #fbfbfb;
+      color: $color100;
       &-display {
-        color: #fbfbfb;
+        color: $color100;
       }
-    }
-    &-display{
-      &-in{
-        &-miniDisplay{
-          color: rgba(251, 251, 251, 0.5);
-
-        }
-        &-display{
-          color:#FBFBFB;
+      &-output {
+        &-display {
+          &-miniResult {
+            color: $color400;
+          }
+          &-result {
+            color: $color100;
+          }
         }
       }
     }
@@ -408,36 +393,30 @@ body.dark-mode {
         #143260 40.94%,
         #061d57 60.11%
       );
-      color: #fbfbfb;
+      color: $color100;
       &-bar {
-        background: #3d76ab;
+        background: $background700;
       }
       &-left {
         &-operations {
-          background: rgba(5, 5, 5, 0.3);
-        }
-        &-numbers {
+          background: $background800;
         }
       }
       &-right {
-        background: rgba(5, 5, 5, 0.3);
+        background: $background800;
         &-operators {
+          color: $color100;
         }
       }
     }
   }
-
   .btn {
-    color: white;
-    background: rgba(5, 5, 5, 0.3);
+    color: $color100;
+    background: $background800;
   }
-  .buton {
-    color: white;
-  }
-  .mode-toggle {
+  .mode {
     background-color: lighten(#1b6a9c, 5%);
-
-    .toggle {
+    &-toggle {
       transform: translateX(19px);
       #dark-mode {
         &:before {
@@ -450,13 +429,5 @@ body.dark-mode {
       }
     }
   }
-}
-.flex {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: -300px;
-  width: 100%;
-  height: 100%;
 }
 </style>
