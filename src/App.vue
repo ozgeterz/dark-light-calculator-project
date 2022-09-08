@@ -17,8 +17,8 @@ export default {
 </script>
 
 <style>
+  @import url('https://fonts.googleapis.com/css?family=Poppins:400,700,900');
 #app {
- 
 font-family: 'Poppins';
 font-style: normal;
 font-weight: 600;

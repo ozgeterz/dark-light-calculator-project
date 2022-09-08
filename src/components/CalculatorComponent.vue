@@ -4,19 +4,23 @@
       <div class="calculator-inner">
         <div class="calculator-inner-output">
           <h1>=</h1>
-          <div class="calculator-inner-display">{{ display }}</div>
+          <div class="calculator-display">
+            <div class="calculator-display-in-miniDisplay">
+              {{ previous || "0" }}
+            </div>
+            <div class="calculator-display-in-display">
+              {{ current || "0" }}
+            </div>
+           
+          </div>
         </div>
         <div class="flex">
-           <h1>Dark Mode toggle</h1>
-        <div class="mode-toggle" @click="modeToggle" :class="darkDark">
+          <div class="mode-toggle" @click="modeToggle" :class="darkDark">
             <div class="toggle">
-                <div id="dark-mode" type="checkbox"></div>
+              <div id="dark-mode" type="checkbox"></div>
             </div>
+          </div>
         </div>
-    </div>
-   
-        
-        
       </div>
 
       <div class="calculator-under">
@@ -42,26 +46,26 @@
             </div>
           </div>
           <div class="calculator-under-left-numbers">
-            <div @click="append(1)" class="btn">1</div>
-            <div @click="append(2)" class="btn">2</div>
-            <div @click="append(3)" class="btn">3</div>
-            <div @click="append(4)" class="btn">4</div>
-            <div @click="append(5)" class="btn">5</div>
-            <div @click="append(6)" class="btn">6</div>
-            <div @click="append(7)" class="btn">7</div>
-            <div @click="append(8)" class="btn">8</div>
-            <div @click="append(9)" class="btn">9</div>
-            <div @click="decimal" class="btn">.</div>
-            <div @click="append(0)" class="btn">0</div>
+            <div @click="append('1')" class="btn">1</div>
+            <div @click="append('2')" class="btn">2</div>
+            <div @click="append('3')" class="btn">3</div>
+            <div @click="append('4')" class="btn">4</div>
+            <div @click="append('5')" class="btn">5</div>
+            <div @click="append('6')" class="btn">6</div>
+            <div @click="append('7')" class="btn">7</div>
+            <div @click="append('8')" class="btn">8</div>
+            <div @click="append('9')" class="btn">9</div>
+            <div @click="dot" class="btn">.</div>
+            <div @click="append('0')" class="btn">0</div>
             <div @click="append(0)" class="btn">00</div>
           </div>
         </div>
         <div class="calculator-under-right">
           <div class="calculator-under-right-operators">
-            <div @click="divide" class="buton">÷</div>
-            <div @click="multiply" class="buton">x</div>
-            <div @click="subtract" class="buton">-</div>
-            <div @click="add" class="buton">+</div>
+            <div @click="operation('/')" class="buton">÷</div>
+            <div @click="operation('×')" class="buton">x</div>
+            <div @click="operation('-')" class="buton">-</div>
+            <div @click="operation('+')" class="buton">+</div>
             <div @click="equal" class="btn">=</div>
           </div>
         </div>
@@ -72,106 +76,109 @@
 </template>
 <script>
 export default {
-  
   name: "CalculatorComponent",
-    computed: {
-        darkDark() {
-            return this.darkMode && 'darkmode-toggled'
-        }
+  computed: {
+    darkDark() {
+      return this.darkMode && "darkmode-toggled";
     },
+  },
 
-
-  data() { 
+  data() {
     return {
-      previous: null,
       display: 0,
+      previous: "",
+      current: "",
       operator: null,
       operatorClicked: false,
+
       darkMode: false,
     };
   },
   methods: {
     dark() {
-            document.querySelector('body').classList.add('dark-mode')
-            this.darkMode = true
-            this.$emit('dark')
-        },
+      document.querySelector("body").classList.add("dark-mode");
+      this.darkMode = true;
+      this.$emit("dark");
+    },
 
-        light() {
-            document.querySelector('body').classList.remove('dark-mode')
-            this.darkMode = false
-            this.$emit('light')
-        },
+    light() {
+      document.querySelector("body").classList.remove("dark-mode");
+      this.darkMode = false;
+      this.$emit("light");
+    },
 
-        modeToggle() {
-            if(this.darkMode || document.querySelector('body').classList.contains('dark-mode')) {
-                this.light()
-            } else {
-                this.dark()
-            }
-        },
-/*
+    modeToggle() {
+      if (
+        this.darkMode ||
+        document.querySelector("body").classList.contains("dark-mode")
+      ) {
+        this.light();
+      } else {
+        this.dark();
+      }
+    },
+    /*
 dark mod işlemleri bitti
 
-*/
-
-    clear() {
-      this.display = 0;
+*/ clear() {
+      this.current = "";
+      this.operatorClicked = false;
+      this.operator = null;
+      this.previous = "";
     },
     sign() {
-      this.display =
-        this.display < 0
-          ? (this.display = this.display - this.display * 2)
-          : (this.display = this.display - this.display * 2);
+      this.current =
+        this.current.charAt(0) === "-"
+          ? this.current.slice(1)
+          : `-${this.current}`;
     },
     percent() {
-      this.display = this.display / 100;
+      this.current = `${parseFloat(this.current) / 100}`;
     },
     append(number) {
-      if (this.operatorClicked === true) {
-        this.display = "";
+      if (this.operatorClicked) {
+        this.current = "";
         this.operatorClicked = false;
       }
-      this.display =
-        this.display === 0
-          ? (this.display = number)
-          : "" + this.display + number;
+      this.previous = `${this.previous}${number}`;
+      this.current = `${this.current}${number}`;
     },
-    decimal() {
-      if (this.display.indexOf(".") === -1) {
+    dot() {
+      if (this.current.indexOf(".") === -1) {
+        if (!this.current.length) {
+          this.append("0");
+        }
         this.append(".");
       }
     },
-    divide() {
-      this.operator = (a, b) => a / b;
-      this.previous = this.display;
+    setPrevious() {
       this.operatorClicked = true;
     },
-    multiply() {
-      this.operator = (a, b) => a * b;
-      this.previous = this.display;
-      this.operatorClicked = true;
-    },
-    subtract() {
-      this.operator = (a, b) => a - b;
-      this.previous = this.display;
-      this.operatorClicked = true;
-    },
-    add() {
-      this.operator = (a, b) => a + b;
-      this.previous = this.display;
-      this.operatorClicked = true;
+    operation(sign) {
+      if (this.previous.indexOf("=") !== -1) {
+        this.previous = this.current;
+      }
+      if (!this.operatorClicked) {
+        this.current = `${this.current}${sign}`;
+        this.previous = `${this.previous}${sign}`;
+        this.setPrevious();
+      }
     },
     equal() {
-      this.display = this.operator(Number(this.previous), Number(this.display));
-      this.previous = null;
-      this.operatorClicked = true;
+      this.current = `${eval(this.previous.replace("×", "*"))}`;
+      this.previous = `${this.previous}=${eval(
+        this.previous.replace("×", "*")
+      )}`;
+      this.operatorClicked = false;
     },
   },
 };
 </script>
 <style lang="scss" scoped>
 .container {
+  display: flex;
+
+  align-items: center;
   background: #e5e5e5;
   max-width: 100%;
   height: 100vh;
@@ -189,6 +196,28 @@ dark mod işlemleri bitti
     #e5e5e5 100%
   );
   border-radius: 40px;
+  &-display {
+    overflow: hidden;
+    font-size: 40px;
+    line-height: 60px;
+    overflow: visible;
+    color: #373737;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -20px;
+    &-in {
+      &-miniDisplay {
+        font-weight: 500;
+        font-size: 22px;
+        line-height: 33px;
+        color: rgba(172, 166, 166, 0.5);
+      }
+      &-display{
+
+      }
+    }
+  }
   &-inner {
     position: absolute;
     width: 100%;
@@ -198,18 +227,9 @@ dark mod işlemleri bitti
     border-radius: 30px;
     &-output {
       display: flex;
-      gap: 270px;
-      margin-top: 270px;
+      gap: 255px;
+      margin-top: 250px;
       margin-left: 50px;
-    }
-    &-display {
-      font-size: 40px;
-      line-height: 60px;
-      overflow: visible;
-      display: flex;
-      align-items: center;
-      text-align: right;
-      color: #373737;
     }
   }
   &-under {
@@ -220,7 +240,12 @@ dark mod işlemleri bitti
     height: 60%;
     top: 40%;
     border-radius: 30px;
-    background: linear-gradient(244.38deg, #60d8fd 10.14%, #98daf7 29.9%, #a4c9ff 70.94%);
+    background: linear-gradient(
+      244.38deg,
+      #60d8fd 20.14%,
+      #98daf7 49.9%,
+      #a4c9ff 70.94%
+    );
     &-left {
       margin-inline-start: 7%;
       display: flex;
@@ -246,14 +271,13 @@ dark mod işlemleri bitti
         margin-top: 20px;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-
         gap: 25px;
         align-items: center;
         text-align: center;
       }
     }
     &-right {
-      margin-top: 40px;
+      margin-top: 34px;
       align-items: center;
       text-align: center;
       width: 70px;
@@ -264,8 +288,8 @@ dark mod işlemleri bitti
       &-operators {
         display: flex;
         flex-direction: column;
-        margin-top: 25px;
-        gap: 33px;
+        margin-top: 10px;
+        gap: 38px;
       }
     }
     &-bar {
@@ -305,144 +329,134 @@ dark mod işlemleri bitti
   cursor: pointer;
 }
 
-// _base.scss işlemleri başladııı
-
-
-$dark: #2322;
-$mode-toggle-bg: #262626;
-
-
-body {
-    background-color: #fff;
-    color: $dark;
-    transition: background-color .2s ease, color .2s ease;
-}
-
-
 // _dark-mode.scss
-body {
-    &.dark-mode {  
-        .calculator{
-         
-          &-inner{
-            background: linear-gradient(166.34deg, #373737 0%, #252628 22.9%, #000309 100%);         
-              color:#FBFBFB;
-            &-display{
-              color:#FBFBFB;
-            }
-          }
-          &-under{  
-            background: linear-gradient(244.38deg, #42869B 8.14%, #2A7DA1 27.9%, #224E91 56.94%, #00123F 84.11%);
-            color:#FBFBFB;
-            &-left{
-              &-operations{
-                background: rgba(5, 5, 5, 0.3);
 
-              }
-              &-numbers{
-              }
-            }
-            &-right{
-              background: rgba(5, 5, 5, 0.3);
-              &-operators{
-                
-              }
-            }
-          }
-        }
-
-        .btn{
-          color: white;
-          background: rgba(5, 5, 5, 0.3);
-        }
-        .buton{
-          color:white;
-          
-        }
-    }
-}
-
-
-// _mode-toggle.scss
 .mode-toggle {
-    position: relative;
-    //margin: auto .5rem .5rem auto;
-    padding: 0;
-    width: 122px;
-    height: 44px;
-    background: #A9DCFD;
-border-radius: 40px;
- 
-    border: 0;
- 
-    outline: 0;
+  position: relative;
+  width: 122px;
+  height: 44px;
+  background: #a9dcfd;
+  border-radius: 40px;
+  overflow: hidden;
+  cursor: pointer;
+  .toggle {
+    position: absolute;
+    top: 0;
+    left: 30px;
+    bottom: 0;
+    margin: auto;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+
+    border: 3px solid transparent;
+    box-shadow: inset 0 0 0 2px #a5abba;
     overflow: hidden;
-    cursor: pointer;
-    z-index: 2;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-    -webkit-touch-callout: none;
-    appearance: none;
-    transition: background-color .5s ease;
+    transition: transform 0.5s ease;
+    #dark-mode {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 50%;
 
-    .toggle {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        margin: auto;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        border: 3px solid transparent;
-        box-shadow: inset 0 0 0 2px #a5abba;
-        overflow: hidden;
-        transition: transform .5s ease;
-        #dark-mode {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            border-radius: 50%;
-
-            &:before {
-                content: '';
-                position: relative;
-                width: 100%;
-                height: 100%;
-                left: 50%;
-                float: left;
-                background-color: #a6abba;
-                transition: border-radius .5s ease, width .5s ease, height .5s ease, left .5s ease, transform .5s ease;
-            }
-        }
+      &:before {
+        content: "";
+        position: relative;
+        width: 100%;
+        height: 100%;
+        left: 50%;
+        float: left;
+        background-color: #a6abba;
+        transition: border-radius 0.5s ease, width 0.5s ease, height 0.5s ease,
+          left 0.5s ease, transform 0.5s ease;
+      }
     }
+  }
 }
 
 body.dark-mode {
-    .mode-toggle {
-        background-color: lighten($mode-toggle-bg, 5%);
-
-        .toggle {
-            transform: translateX(19px);
-
-            #dark-mode {
-                &:before {
-                    border-radius: 50%;
-                    width: 150%;
-                    height: 85%;
-                    left: 40%;
-                    transform: translate(-10%, -40%), rotate(-35deg);
-                }
-            }
-        }
+  .calculator {
+    &-inner {
+      background: linear-gradient(
+        166.34deg,
+        #373737 0%,
+        #252628 22.9%,
+        #000309 100%
+      );
+      color: #fbfbfb;
+      &-display {
+        color: #fbfbfb;
+      }
     }
+    &-display{
+      &-in{
+        &-miniDisplay{
+          color: rgba(251, 251, 251, 0.5);
+
+        }
+        &-display{
+          color:#FBFBFB;
+        }
+      }
+    }
+    &-under {
+      background: linear-gradient(
+        244.38deg,
+        #2c9abc15 0.14%,
+        #2a7da1 2.9%,
+        #143260 40.94%,
+        #061d57 60.11%
+      );
+      color: #fbfbfb;
+      &-bar {
+        background: #3d76ab;
+      }
+      &-left {
+        &-operations {
+          background: rgba(5, 5, 5, 0.3);
+        }
+        &-numbers {
+        }
+      }
+      &-right {
+        background: rgba(5, 5, 5, 0.3);
+        &-operators {
+        }
+      }
+    }
+  }
+
+  .btn {
+    color: white;
+    background: rgba(5, 5, 5, 0.3);
+  }
+  .buton {
+    color: white;
+  }
+  .mode-toggle {
+    background-color: lighten(#1b6a9c, 5%);
+
+    .toggle {
+      transform: translateX(19px);
+      #dark-mode {
+        &:before {
+          border-radius: 50%;
+          width: 150%;
+          height: 85%;
+          left: 40%;
+          transform: translate(-10%, -40%), rotate(-35deg);
+        }
+      }
+    }
+  }
 }
 .flex {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top:-300px;
-    width: 100%;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -300px;
+  width: 100%;
+  height: 100%;
 }
 </style>
